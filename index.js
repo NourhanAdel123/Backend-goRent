@@ -1,15 +1,17 @@
 import env from "dotenv";
 import express from "express";
-import connectDB from "./config/DB.js";
-import authRouter from "./src/routes/Auth.routes.js";
-
+import connectDB from "./src/DB/Config.js";
+import authRouter from "./src/modules/Auth/auth.route.js";
+import cookieParser from "cookie-parser";
 env.config();
+
+const PORT = process.env.PORT || 5000;
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
+
 app.use("/api/auth", authRouter);
-const PORT = process.env.PORT || 5000;
-const JWT_SECRET = process.env.JWT_SECRET;
 
 const startServer = async () => {
   await connectDB();
