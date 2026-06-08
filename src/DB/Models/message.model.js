@@ -19,7 +19,7 @@ const messageSchema = new mongoose.Schema(
     },
     attachmentUrl: {
       type: String,
-      default: null, // Optional Cloudinary URL
+      default: null,
     },
     isRead: {
       type: Boolean,

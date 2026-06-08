@@ -27,7 +27,6 @@ const chatThreadSchema = new mongoose.Schema(
   },
 );
 
-// Compound index to quickly find threads between a specific tenant and owner regarding a property
 chatThreadSchema.index(
   { tenantId: 1, ownerId: 1, propertyId: 1 },
   { unique: true },

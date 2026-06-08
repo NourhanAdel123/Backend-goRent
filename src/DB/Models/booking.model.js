@@ -15,7 +15,7 @@ const bookingSchema = new mongoose.Schema(
     stripePaymentIntentId: {
       type: String,
       required: true,
-      unique: true, // Prevents duplicate payment tracking records
+      unique: true, 
       trim: true,
     },
     amountPaid: {
@@ -30,7 +30,7 @@ const bookingSchema = new mongoose.Schema(
     },
     contractPdfUrl: {
       type: String,
-      default: "", // Optional until generated
+      default: "", 
     },
     signatures: {
       tenantSigned: {
@@ -52,11 +52,10 @@ const bookingSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // Automatically manages createdAt and updatedAt
+    timestamps: true, 
   },
 );
 
-// Indexes for optimizing lookups in dashboard views
 bookingSchema.index({ tenantId: 1, status: 1 });
 bookingSchema.index({ propertyId: 1, startDate: 1, endDate: 1 });
 

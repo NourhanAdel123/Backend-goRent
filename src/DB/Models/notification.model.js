@@ -35,14 +35,12 @@ const notificationSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // Automatically manages createdAt and updatedAt
+    timestamps: true, 
   },
 );
 
-// Compound index to instantly fetch unread, unarchived notifications for a user's notification badge
 notificationSchema.index({ userId: 1, isArchived: 1, isRead: 1 });
 
-// Index to quickly sort notifications by newest first
 notificationSchema.index({ createdAt: -1 });
 
 const Notification = mongoose.model("Notification", notificationSchema);

@@ -33,17 +33,14 @@ const viewingSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // Automatically manages createdAt and updatedAt
+    timestamps: true, 
   },
 );
 
-// Index for tenants to see their upcoming or past viewing appointments
 viewingSchema.index({ tenantId: 1, scheduledAt: 1 });
 
-// Index for owners to see their agenda/viewing schedule
 viewingSchema.index({ ownerId: 1, scheduledAt: 1 });
 
-// Index for checking all viewings booked for a specific property
 viewingSchema.index({ propertyId: 1, status: 1 });
 
 const Viewing = mongoose.model("Viewing", viewingSchema);

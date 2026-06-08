@@ -65,7 +65,6 @@ const propertySchema = new Schema(
       type: Date,
       default: null,
     },
-    // Flattened or nested specifications grouped by type
     specifications: {
       apartment: {
         bedrooms: { type: Number, default: null },
@@ -84,7 +83,6 @@ const propertySchema = new Schema(
   },
 );
 
-// 2dsphere index for location-based queries (distance, geoWithin, etc.)
 propertySchema.index({ location: "2dsphere" });
 
 const Property = mongoose.model("Property", propertySchema);
