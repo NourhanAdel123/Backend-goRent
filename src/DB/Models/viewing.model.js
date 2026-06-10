@@ -45,4 +45,4 @@ viewingSchema.index({ propertyId: 1, status: 1 });
 
 const Viewing = mongoose.model("Viewing", viewingSchema);
 
-module.exports = Viewing;
+export default Viewing;
