@@ -77,7 +77,10 @@ export const verifyRole = (requiredRole) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       req.user = decoded;
       console.log(req.user);
-      if (decoded.role === requiredRole || decoded.role === "superadmin") {
+      if (
+        requiredRole.includes(decoded.role) ||
+        decoded.role === "superadmin"
+      ) {
         return next();
       } else {
         return res
