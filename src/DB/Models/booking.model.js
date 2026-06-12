@@ -3,12 +3,12 @@ import mongoose from "mongoose";
 const bookingSchema = new mongoose.Schema(
   {
     propertyId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Property",
       required: true,
     },
     tenantId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },

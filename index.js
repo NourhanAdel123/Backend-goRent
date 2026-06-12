@@ -2,6 +2,7 @@ import env from "dotenv";
 import express from "express";
 import connectDB from "./src/DB/Config.js";
 import authRouter from "./src/modules/Auth/auth.route.js";
+import reviewsRouter from "./src/modules/Reviews/reviews.route.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 env.config();
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api/auth", authRouter);
+app.use("/api/reviews", reviewsRouter);
 
 const startServer = async () => {
   await connectDB();

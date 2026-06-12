@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 const adminLogSchema = new mongoose.Schema(
   {
     adminId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -18,7 +18,7 @@ const adminLogSchema = new mongoose.Schema(
       required: true,
     },
     targetId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
     targetType: {

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const notificationSchema = new mongoose.Schema(
   {
     userId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -22,7 +22,7 @@ const notificationSchema = new mongoose.Schema(
     },
     // Generic reference ID pointing to the source document (e.g., Message ID, Booking ID, Property ID)
     refId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
     isRead: {

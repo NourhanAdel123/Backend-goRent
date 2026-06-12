@@ -2,17 +2,17 @@ import mongoose from "mongoose";
 const reviewSchema = new mongoose.Schema(
   {
     authorId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
     propertyId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Property",
       default: null,
     },
     targetUserId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       default: null, 
     },

@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
-const propertySchema = new Schema(
+const propertySchema = new mongoose.Schema(
   {
     ownerId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -35,7 +35,7 @@ const propertySchema = new Schema(
       type: [String],
       default: [],
     },
-    
+
     location: {
       type: {
         type: String,
@@ -57,7 +57,7 @@ const propertySchema = new Schema(
       default: "PENDING",
     },
     reviewedBy: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       default: null,
     },
@@ -86,3 +86,4 @@ const propertySchema = new Schema(
 propertySchema.index({ location: "2dsphere" });
 
 const Property = mongoose.model("Property", propertySchema);
+export default Property;
