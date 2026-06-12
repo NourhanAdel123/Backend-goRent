@@ -31,6 +31,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    cancellationCount: {
+      type: Number,
+      default: 0
+    },
     isbanned: {
       type: Boolean,
       default: false,

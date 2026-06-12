@@ -3,19 +3,19 @@ import mongoose from "mongoose";
 const bookingSchema = new mongoose.Schema(
   {
     propertyId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Property",
       required: true,
     },
     tenantId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
     stripePaymentIntentId: {
       type: String,
       required: true,
-      unique: true, 
+      unique: true,
       trim: true,
     },
     amountPaid: {
@@ -30,7 +30,7 @@ const bookingSchema = new mongoose.Schema(
     },
     contractPdfUrl: {
       type: String,
-      default: "", 
+      default: "",
     },
     signatures: {
       tenantSigned: {
@@ -52,7 +52,7 @@ const bookingSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, 
+    timestamps: true,
   },
 );
 
