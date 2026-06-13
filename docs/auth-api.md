@@ -14,6 +14,8 @@ This API provides authentication endpoints for user registration and login.
 
 Registers a new user account.
 
+This endpoint also accepts an optional `profileImage` file in `multipart/form-data` and stores it in Cloudinary.
+
 Request body:
 
 ```json
@@ -27,12 +29,13 @@ Request body:
 
 Body fields:
 
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| name | string | yes | User full name |
-| email | string | yes | Unique email address |
-| password | string | yes | Plain-text password, hashed before saving |
-| role | string | no | One of `tenant`, `owner`, `admin`, `superadmin` |
+| Field        | Type   | Required | Description                                     |
+| ------------ | ------ | -------- | ----------------------------------------------- |
+| name         | string | yes      | User full name                                  |
+| email        | string | yes      | Unique email address                            |
+| password     | string | yes      | Plain-text password, hashed before saving       |
+| role         | string | no       | One of `tenant`, `owner`, `admin`, `superadmin` |
+| profileImage | file   | no       | Optional profile image uploaded to Cloudinary   |
 
 Success response:
 
@@ -76,10 +79,10 @@ Request body:
 
 Body fields:
 
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| email | string | yes | Registered email |
-| password | string | yes | User password |
+| Field    | Type   | Required | Description      |
+| -------- | ------ | -------- | ---------------- |
+| email    | string | yes      | Registered email |
+| password | string | yes      | User password    |
 
 Success response:
 
@@ -111,8 +114,11 @@ Register:
 
 ```bash
 curl -X POST http://localhost:5000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Ahmed Ali","email":"ahmed@example.com","password":"Password123!","role":"tenant"}'
+  -F "name=Ahmed Ali" \
+  -F "email=ahmed@example.com" \
+  -F "password=Password123!" \
+  -F "role=tenant" \
+  -F "profileImage=@/path/to/image.jpg"
 ```
 
 Login:
@@ -128,3 +134,5 @@ curl -X POST http://localhost:5000/api/auth/login \
 - The API uses `JWT_SECRET` from `.env` to sign login tokens.
 - The `password` field is hashed automatically before saving.
 - If MongoDB is unavailable, the server will stop during startup.
+- Multer and Cloudinary are used for image uploads.
+- Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` in `.env` before uploading images.

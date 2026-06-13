@@ -1,5 +1,6 @@
 import User from "../../DB/Models/user.model.js";
 import JWT from "jsonwebtoken";
+import { uploadToCloudinary } from "../../utils/cloudinary.js";
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -47,7 +48,24 @@ const register = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
-    const user = new User({ name, email, password, role });
+
+    let profileImage = "";
+    const uploadedFile = req.files?.[0];
+
+    if (uploadedFile) {
+      try {
+        profileImage = await uploadToCloudinary(uploadedFile, "gorent/users");
+      } catch (err) {
+        console.error("Failed to upload profile image:", err);
+        return res.status(500).json({
+          message: "Server error",
+          error: err.message || "Cloudinary upload failed",
+          http_code: err.http_code || null,
+        });
+      }
+    }
+
+    const user = new User({ name, email, password, role, profileImage });
     await user.save();
     res.status(201).json({ message: "User registered successfully", user });
   } catch (error) {

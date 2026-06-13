@@ -1,22 +1,38 @@
 {
   "info": {
     "_postman_id": "7b2c8e8a-4c7a-4d3d-8b9d-9a6d2d0f5a01",
-    "name": "GoRent Auth API",
-    "description": "Postman collection for GoRent authentication endpoints.",
+    "name": "GoRent API",
+    "description": "Postman collection for GoRent auth and property endpoints with ready-to-run sample data.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
       "value": "http://localhost:5000"
+    },
+    {
+      "key": "ownerToken",
+      "value": ""
+    },
+    {
+      "key": "adminToken",
+      "value": ""
+    },
+    {
+      "key": "propertyId",
+      "value": ""
+    },
+    {
+      "key": "shopPropertyId",
+      "value": ""
     }
   ],
   "item": [
     {
-      "name": "Auth",
+      "name": "Auth Setup",
       "item": [
         {
-          "name": "Register",
+          "name": "Register Owner",
           "request": {
             "method": "POST",
             "header": [
@@ -27,7 +43,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Ahmed Ali\",\n  \"email\": \"ahmed@example.com\",\n  \"password\": \"Password123!\",\n  \"role\": \"tenant\"\n}"
+              "raw": "{\n  \"name\": \"Owner Test\",\n  \"email\": \"owner@gorent.test\",\n  \"password\": \"Password123!\",\n  \"role\": \"owner\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/register",
@@ -40,49 +56,11 @@
                 "register"
               ]
             },
-            "description": "Create a new user account."
-          },
-          "response": [
-            {
-              "name": "Success",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"name\": \"Ahmed Ali\",\n  \"email\": \"ahmed@example.com\",\n  \"password\": \"Password123!\",\n  \"role\": \"tenant\"\n}"
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/api/auth/register",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "api",
-                    "auth",
-                    "register"
-                  ]
-                }
-              },
-              "status": "Created",
-              "code": 201,
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "body": "{\n  \"success\": true,\n  \"user\": {\n    \"_id\": \"66a0f2c5f3f3d6d9b1a11111\",\n    \"name\": \"Ahmed Ali\",\n    \"email\": \"ahmed@example.com\",\n    \"role\": \"tenant\"\n  }\n}"
-            }
-          ]
+            "description": "Seed an owner account for property CRUD tests."
+          }
         },
         {
-          "name": "Login",
+          "name": "Register Admin",
           "request": {
             "method": "POST",
             "header": [
@@ -93,7 +71,35 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"ahmed@example.com\",\n  \"password\": \"Password123!\"\n}"
+              "raw": "{\n  \"name\": \"Admin Test\",\n  \"email\": \"admin@gorent.test\",\n  \"password\": \"Password123!\",\n  \"role\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Seed an admin account for approval and rejection tests."
+          }
+        },
+        {
+          "name": "Login Owner",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"owner@gorent.test\",\n  \"password\": \"Password123!\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/login",
@@ -106,46 +112,372 @@
                 "login"
               ]
             },
-            "description": "Authenticate an existing user and receive a JWT token."
-          },
-          "response": [
-            {
-              "name": "Success",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"email\": \"ahmed@example.com\",\n  \"password\": \"Password123!\"\n}"
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/api/auth/login",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "api",
-                    "auth",
-                    "login"
+            "description": "Login as owner and store the JWT in the ownerToken collection variable.",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "const body = pm.response.json();",
+                    "if (body && body.token) {",
+                    "  pm.collectionVariables.set('ownerToken', body.token);",
+                    "}"
                   ]
                 }
-              },
-              "status": "OK",
-              "code": 200,
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Login Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@gorent.test\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
               ],
-              "body": "{\n  \"success\": true,\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"id\": \"66a0f2c5f3f3d6d9b1a11111\",\n    \"name\": \"Ahmed Ali\",\n    \"email\": \"ahmed@example.com\",\n    \"role\": \"tenant\"\n  }\n}"
-            }
-          ]
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Login as admin and store the JWT in the adminToken collection variable.",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "const body = pm.response.json();",
+                    "if (body && body.token) {",
+                    "  pm.collectionVariables.set('adminToken', body.token);",
+                    "}"
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Properties",
+      "item": [
+        {
+          "name": "Create Apartment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "token={{ownerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"APARTMENT\",\n  \"title\": \"Downtown 2BR Apartment\",\n  \"description\": \"Bright apartment near the metro with balcony and elevator access.\",\n  \"pricePerMonth\": 4500,\n  \"squareFootage\": 110,\n  \"location\": {\n    \"type\": \"Point\",\n    \"coordinates\": [31.2357, 30.0444]\n  },\n  \"specifications\": {\n    \"apartment\": {\n      \"bedrooms\": 2,\n      \"bathrooms\": 2,\n      \"hasElevator\": true\n    }\n  },\n  \"isAvailable\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/properties",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "properties"
+              ]
+            },
+            "description": "Owner creates an apartment listing. The response stores propertyId for later approval/update/delete tests.",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "const body = pm.response.json();",
+                    "if (body && body.property && body.property._id) {",
+                    "  pm.collectionVariables.set('propertyId', body.property._id);",
+                    "}"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Create Shop",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "token={{ownerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"SHOP\",\n  \"title\": \"Corner Retail Shop\",\n  \"description\": \"Street-level shop with strong foot traffic and large display window.\",\n  \"pricePerMonth\": 12000,\n  \"squareFootage\": 85,\n  \"location\": {\n    \"type\": \"Point\",\n    \"coordinates\": [31.2243, 30.0507]\n  },\n  \"specifications\": {\n    \"shop\": {\n      \"electricityCapacity\": 60,\n      \"footTrafficTier\": \"HIGH\",\n      \"commercialLicenseRequired\": true\n    }\n  },\n  \"isAvailable\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/properties",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "properties"
+              ]
+            },
+            "description": "Owner creates a shop listing. The response stores shopPropertyId for rejection/delete tests.",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "const body = pm.response.json();",
+                    "if (body && body.property && body.property._id) {",
+                    "  pm.collectionVariables.set('shopPropertyId', body.property._id);",
+                    "}"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "List Approved Properties",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/properties?page=1&limit=10&type=APARTMENT&minPrice=1000&maxPrice=6000&minSize=50&maxSize=150&bedrooms=2&bathrooms=2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "properties"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "type",
+                  "value": "APARTMENT"
+                },
+                {
+                  "key": "minPrice",
+                  "value": "1000"
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "6000"
+                },
+                {
+                  "key": "minSize",
+                  "value": "50"
+                },
+                {
+                  "key": "maxSize",
+                  "value": "150"
+                },
+                {
+                  "key": "bedrooms",
+                  "value": "2"
+                },
+                {
+                  "key": "bathrooms",
+                  "value": "2"
+                }
+              ]
+            },
+            "description": "Public list endpoint with sample filters and pagination. Only approved properties are returned."
+          }
+        },
+        {
+          "name": "Geo Search Properties",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/properties?lng=31.2357&lat=30.0444&radius=5000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "properties"
+              ],
+              "query": [
+                {
+                  "key": "lng",
+                  "value": "31.2357"
+                },
+                {
+                  "key": "lat",
+                  "value": "30.0444"
+                },
+                {
+                  "key": "radius",
+                  "value": "5000"
+                }
+              ]
+            },
+            "description": "Public geo search using $near with radius in meters."
+          }
+        },
+        {
+          "name": "Get Approved Property By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/properties/{{propertyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "properties",
+                "{{propertyId}}"
+              ]
+            },
+            "description": "Fetch a single approved property after it has been approved by admin."
+          }
+        },
+        {
+          "name": "Update Property",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "token={{ownerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Downtown 2BR Apartment - Updated\",\n  \"pricePerMonth\": 4800,\n  \"isAvailable\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/properties/{{propertyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "properties",
+                "{{propertyId}}"
+              ]
+            },
+            "description": "Owner updates their own listing."
+          }
+        },
+        {
+          "name": "Approve Property",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "token={{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/properties/{{propertyId}}/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "properties",
+                "{{propertyId}}",
+                "approve"
+              ]
+            },
+            "description": "Admin approves the seeded apartment listing."
+          }
+        },
+        {
+          "name": "Reject Property",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "token={{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/properties/{{shopPropertyId}}/reject",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "properties",
+                "{{shopPropertyId}}",
+                "reject"
+              ]
+            },
+            "description": "Admin rejects the seeded shop listing."
+          }
+        },
+        {
+          "name": "Delete Property",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "token={{ownerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/properties/{{shopPropertyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "properties",
+                "{{shopPropertyId}}"
+              ]
+            },
+            "description": "Owner deletes their own property listing."
+          }
         }
       ]
     }
