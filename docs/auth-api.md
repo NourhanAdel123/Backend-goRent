@@ -29,13 +29,13 @@ Request body:
 
 Body fields:
 
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| name | string | yes | User full name |
-| email | string | yes | Unique email address |
-| password | string | yes | Plain-text password, hashed before saving |
-| role | string | no | One of `tenant`, `owner`, `admin`, `superadmin` |
-| profileImage | file | no | Optional profile image uploaded to Cloudinary |
+| Field        | Type   | Required | Description                                     |
+| ------------ | ------ | -------- | ----------------------------------------------- |
+| name         | string | yes      | User full name                                  |
+| email        | string | yes      | Unique email address                            |
+| password     | string | yes      | Plain-text password, hashed before saving       |
+| role         | string | no       | One of `tenant`, `owner`, `admin`, `superadmin` |
+| profileImage | file   | no       | Optional profile image uploaded to Cloudinary   |
 
 Success response:
 
@@ -79,10 +79,10 @@ Request body:
 
 Body fields:
 
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| email | string | yes | Registered email |
-| password | string | yes | User password |
+| Field    | Type   | Required | Description      |
+| -------- | ------ | -------- | ---------------- |
+| email    | string | yes      | Registered email |
+| password | string | yes      | User password    |
 
 Success response:
 

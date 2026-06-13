@@ -9,7 +9,7 @@ const propertySchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["RESIDENTIAL", "COMMERCIAL"],
+      enum: ["APARTMENT", "SHOP"],
       required: true,
     },
     title: {
