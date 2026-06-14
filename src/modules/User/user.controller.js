@@ -2,18 +2,18 @@ import mongoose from "mongoose";
 import User from "../../DB/Models/user.model.js";
 import { logAdminAction } from "../Admin/adminLog.controller.js";
 
-export const banUser = async (req, res) => {
+export const banUser = async (req, res, next) => {
   try {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid user id" });
+      return next(new Error("Invalid user id", { cause: 400 }));
     }
 
     const user = await User.findById(id);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return next(new Error("User not found", { cause: 404 }));
     }
 
     user.isbanned = true;
@@ -31,25 +31,28 @@ export const banUser = async (req, res) => {
       user,
     });
   } catch (error) {
-    return res.status(500).json({
-      message: "Server error",
-      error: error.message,
-    });
+    // return res.status(500).json({
+    //   message: "Server error",
+    //   error: error.message,
+    // });
+    return next(error);
   }
 };
 
-export const unbanUser = async (req, res) => {
+export const unbanUser = async (req, res, next) => {
   try {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid user id" });
+      // return res.status(400).json({ message: "Invalid user id" });
+      return next(new Error("Invalid user id", { cause: 400 }));
     }
 
     const user = await User.findById(id);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      // return res.status(404).json({ message: "User not found" });
+      return next(new Error("User not found", { cause: 404 }));
     }
 
     user.isbanned = false;
@@ -67,9 +70,10 @@ export const unbanUser = async (req, res) => {
       user,
     });
   } catch (error) {
-    return res.status(500).json({
-      message: "Server error",
-      error: error.message,
-    });
+    // return res.status(500).json({
+    //   message: "Server error",
+    //   error: error.message,
+    // });
+    return next(error);
   }
 };

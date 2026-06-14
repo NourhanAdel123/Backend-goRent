@@ -1,7 +1,7 @@
 import User from "../../DB/Models/user.model.js";
 import JWT from "jsonwebtoken";
 import { uploadToCloudinary } from "../../utils/cloudinary.js";
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {

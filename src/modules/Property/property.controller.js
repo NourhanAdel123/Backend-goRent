@@ -81,7 +81,7 @@ const buildPropertyFilter = (query) => {
   return { filter };
 };
 
-export const createProperty = async (req, res) => {
+export const createProperty = async (req, res, next) => {
   try {
     const ownerId = req.user.id;
     const {
@@ -113,14 +113,15 @@ export const createProperty = async (req, res) => {
       property,
     });
   } catch (error) {
-    return res.status(500).json({
-      message: "Server error",
-      error: error.message,
-    });
+    // return res.status(500).json({
+    //   message: "Server error",
+    //   error: error.message,
+    // });
+    return next(error);
   }
 };
 
-export const getProperties = async (req, res) => {
+export const getProperties = async (req, res, next) => {
   try {
     const page = Math.max(parseNumber(req.query.page) || 1, 1);
     const limit = Math.max(parseNumber(req.query.limit) || 10, 1);
@@ -154,19 +155,22 @@ export const getProperties = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({
-      message: "Server error",
-      error: error.message,
-    });
+    // return res.status(500).json({
+    //   message: "Server error",
+    //   error: error.message,
+    // });
+    return next(error);
   }
 };
 
-export const getPropertyById = async (req, res) => {
+export const getPropertyById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid property id" });
+      // return res.status(400).json({ message: "Invalid property id" });
+
+      return next(new Error("Invalid property id", { cause: 400 }));
     }
 
     const property = await Property.findOne({
@@ -175,35 +179,45 @@ export const getPropertyById = async (req, res) => {
     }).populate("ownerId", "name email phone profileImage");
 
     if (!property) {
-      return res.status(404).json({ message: "Property not found" });
+      // return res.status(404).json({ message: "Property not found" });
+
+      return next(new Error("Property not found", { cause: 404 }));
     }
 
     return res.status(200).json({ property });
   } catch (error) {
-    return res.status(500).json({
-      message: "Server error",
-      error: error.message,
-    });
+    // return res.status(500).json({
+    //   message: "Server error",
+    //   error: error.message,
+    // });
+    return next(error);
   }
 };
 
-export const updateProperty = async (req, res) => {
+export const updateProperty = async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid property id" });
+      // return res.status(400).json({ message: "Invalid property id" });
+
+      return next(new Error("Invalid property id", { cause: 400 }));
     }
 
     const property = await Property.findById(id);
 
     if (!property) {
-      return res.status(404).json({ message: "Property not found" });
+      // return res.status(404).json({ message: "Property not found" })
+      //
+
+      return next(new Error("Property not found", { cause: 404 }));
     }
 
     if (property.ownerId.toString() !== userId.toString()) {
-      return res.status(403).json({ message: "Not authorized" });
+      // return res.status(403).json({ message: "Not authorized" });
+
+      return next(new Error("Not authorized", { cause: 403 }));
     }
 
     const updatableFields = [
@@ -230,30 +244,34 @@ export const updateProperty = async (req, res) => {
       property,
     });
   } catch (error) {
-    return res.status(500).json({
-      message: "Server error",
-      error: error.message,
-    });
+    // return res.status(500).json({
+    //   message: "Server error",
+    //   error: error.message,
+    // });
+    return next(error);
   }
 };
 
-export const deleteProperty = async (req, res) => {
+export const deleteProperty = async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid property id" });
+      // return res.status(400).json({ message: "Invalid property id" });
+      return next(new Error("Invalid property id", { cause: 400 }));
     }
 
     const property = await Property.findById(id);
 
     if (!property) {
-      return res.status(404).json({ message: "Property not found" });
+      // return res.status(404).json({ message: "Property not found" });
+      return next(new Error("Property not found", { cause: 404 }));
     }
 
     if (property.ownerId.toString() !== userId.toString()) {
-      return res.status(403).json({ message: "Not authorized" });
+      // return res.status(403).json({ message: "Not authorized" });
+      return next(new Error("Not authorized", { cause: 403 }));
     }
 
     await Property.findByIdAndDelete(id);
@@ -262,25 +280,28 @@ export const deleteProperty = async (req, res) => {
       message: "Property deleted successfully",
     });
   } catch (error) {
-    return res.status(500).json({
-      message: "Server error",
-      error: error.message,
-    });
+    // return res.status(500).json({
+    //   message: "Server error",
+    //   error: error.message,
+    // });
+    return next(error);
   }
 };
 
-export const approveProperty = async (req, res) => {
+export const approveProperty = async (req, res, next) => {
   try {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid property id" });
+      // return res.status(400).json({ message: "Invalid property id" });
+      return next(new Error("Invalid property id", { cause: 400 }));
     }
 
     const property = await Property.findById(id);
 
     if (!property) {
-      return res.status(404).json({ message: "Property not found" });
+      // return res.status(404).json({ message: "Property not found" });
+      return next(new Error("Property not found", { cause: 404 }));
     }
 
     property.status = "APPROVED";
@@ -301,25 +322,28 @@ export const approveProperty = async (req, res) => {
       property,
     });
   } catch (error) {
-    return res.status(500).json({
-      message: "Server error",
-      error: error.message,
-    });
+    // return res.status(500).json({
+    //   message: "Server error",
+    //   error: error.message,
+    // });
+    return next(error);
   }
 };
 
-export const rejectProperty = async (req, res) => {
+export const rejectProperty = async (req, res, next) => {
   try {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid property id" });
+      // return res.status(400).json({ message: "Invalid property id" });
+      return next(new Error("Invalid property id", { cause: 400 }));
     }
 
     const property = await Property.findById(id);
 
     if (!property) {
-      return res.status(404).json({ message: "Property not found" });
+      // return res.status(404).json({ message: "Property not found" });
+      return next(new Error("Property not found", { cause: 404 }));
     }
 
     property.status = "REJECTED";
@@ -340,9 +364,10 @@ export const rejectProperty = async (req, res) => {
       property,
     });
   } catch (error) {
-    return res.status(500).json({
-      message: "Server error",
-      error: error.message,
-    });
+    // return res.status(500).json({
+    //   message: "Server error",
+    //   error: error.message,
+    // });
+    return next(error);
   }
 };
