@@ -289,6 +289,13 @@ export const approveProperty = async (req, res) => {
 
     await property.save();
 
+    await logAdminAction({
+      adminId: req.user.id,
+      action: "APPROVE_LISTING",
+      targetId: id,
+      targetType: "PROPERTY",
+    });
+
     return res.status(200).json({
       message: "Property approved successfully",
       property,
@@ -320,6 +327,13 @@ export const rejectProperty = async (req, res) => {
     property.reviewedAt = new Date();
 
     await property.save();
+
+    await logAdminAction({
+      adminId: req.user.id,
+      action: "REJECT_LISTING",
+      targetId: id,
+      targetType: "PROPERTY",
+    });
 
     return res.status(200).json({
       message: "Property rejected successfully",
