@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Property from "../../DB/Models/property.model.js";
+import { logAdminAction } from "../Admin/adminLog.controller.js";
 
 const parseNumber = (value) => {
   if (value === undefined || value === null || value === "") {
@@ -113,10 +114,6 @@ export const createProperty = async (req, res, next) => {
       property,
     });
   } catch (error) {
-    // return res.status(500).json({
-    //   message: "Server error",
-    //   error: error.message,
-    // });
     return next(error);
   }
 };
@@ -140,9 +137,23 @@ export const getProperties = async (req, res, next) => {
       query.sort({ createdAt: -1 });
     }
 
+    // countDocuments does not support $near, so we replace it with $geoWithin
+    // using $centerSphere (converted from meters to radians) for the count query.
+    const countFilter = { ...filter };
+    if (countFilter.location && countFilter.location.$near) {
+      countFilter.location = {
+        $geoWithin: {
+          $centerSphere: [
+            filter.location.$near.$geometry.coordinates,
+            filter.location.$near.$maxDistance / 6378100, // Earth's equatorial radius in meters
+          ],
+        },
+      };
+    }
+
     const [properties, totalItems] = await Promise.all([
       query.skip((page - 1) * limit).limit(limit),
-      Property.countDocuments(filter),
+      Property.countDocuments(countFilter),
     ]);
 
     return res.status(200).json({
