@@ -1,15 +1,5 @@
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
-// // sanitize environment values (strip surrounding quotes and whitespace)
-// const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME
-//   ? process.env.CLOUDINARY_CLOUD_NAME.replace(/^['"]|['"]$/g, "").trim()
-//   : undefined;
-// const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY
-//   ? process.env.CLOUDINARY_API_KEY.replace(/^['"]|['"]$/g, "").trim()
-//   : undefined;
-// const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET
-//   ? process.env.CLOUDINARY_API_SECRET.replace(/^['"]|['"]$/g, "").trim()
-//   : undefined;
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
