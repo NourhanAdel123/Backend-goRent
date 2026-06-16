@@ -137,15 +137,13 @@ export const getProperties = async (req, res, next) => {
       query.sort({ createdAt: -1 });
     }
 
-    // countDocuments does not support $near, so we replace it with $geoWithin
-    // using $centerSphere (converted from meters to radians) for the count query.
     const countFilter = { ...filter };
     if (countFilter.location && countFilter.location.$near) {
       countFilter.location = {
         $geoWithin: {
           $centerSphere: [
             filter.location.$near.$geometry.coordinates,
-            filter.location.$near.$maxDistance / 6378100, // Earth's equatorial radius in meters
+            filter.location.$near.$maxDistance / 6378100,
           ],
         },
       };
