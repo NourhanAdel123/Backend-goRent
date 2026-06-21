@@ -169,6 +169,58 @@ export const updateUser = async (req, res, next) => {
   }
 };
 
+
+export const changePassword = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    // Validation
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return next(new Error("All fields are required", { cause: 400 }));
+    }
+
+    if (newPassword.length < 8) {
+      return next(new Error("New password must be at least 8 characters", { cause: 400 }));
+    }
+
+    if (newPassword === currentPassword) {
+      return next(new Error("New password must be different from current password", { cause: 400 }));
+    }
+
+    if (newPassword !== confirmPassword) {
+      return next(new Error("New password and confirm password do not match", { cause: 400 }));
+    }
+
+    // Authorization
+    const isSelf = id.toString() === req.user.id.toString();
+    if (!isSelf) {
+      return next(new Error("Not authorized", { cause: 403 }));
+    }
+
+    // Find user
+    const user = await User.findById(id);
+    if (!user) {
+      return next(new Error("User not found", { cause: 404 }));
+    }
+
+    // Verify current password
+    const isMatch = await user.matchPassword(currentPassword);
+    if (!isMatch) {
+      return next(new Error("Current password is incorrect", { cause: 400 }));
+    }
+
+    // Update password
+    user.password = newPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 export const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
