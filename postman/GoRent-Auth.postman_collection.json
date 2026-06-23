@@ -25,6 +25,14 @@
     {
       "key": "shopPropertyId",
       "value": ""
+    },
+    {
+      "key": "tenantToken",
+      "value": ""
+    },
+    {
+      "key": "threadId",
+      "value": ""
     }
   ],
   "item": [
@@ -477,6 +485,219 @@
               ]
             },
             "description": "Owner deletes their own property listing."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "item": [
+        {
+          "name": "Register Tenant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Tenant Test\",\n  \"email\": \"tenant@gorent.test\",\n  \"password\": \"Password123!\",\n  \"role\": \"tenant\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Create a tenant account for chat tests."
+          }
+        },
+        {
+          "name": "Login Tenant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tenant@gorent.test\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login as tenant. Copy the token cookie value into tenantToken if Postman does not store cookies automatically.",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "const token = pm.cookies.get('token');",
+                    "if (token) {",
+                    "  pm.collectionVariables.set('tenantToken', token);",
+                    "}"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Create Chat Thread",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "token={{tenantToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"propertyId\": \"{{propertyId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/threads",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat", "threads"]
+            },
+            "description": "Tenant starts a chat about an approved property. Requires propertyId from Properties folder.",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "const body = pm.response.json();",
+                    "if (body && body.thread && body.thread._id) {",
+                    "  pm.collectionVariables.set('threadId', body.thread._id);",
+                    "}"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "List My Threads",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "token={{tenantToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/threads",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat", "threads"]
+            },
+            "description": "List chat threads for the logged-in tenant or owner."
+          }
+        },
+        {
+          "name": "Send Message (Tenant)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "token={{tenantToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Hello, is this property still available?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/threads/{{threadId}}/messages",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat", "threads", "{{threadId}}", "messages"]
+            },
+            "description": "Send a text message in a thread."
+          }
+        },
+        {
+          "name": "Get Thread Messages",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "token={{ownerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/threads/{{threadId}}/messages?page=1&limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat", "threads", "{{threadId}}", "messages"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "50" }
+              ]
+            },
+            "description": "Fetch messages and check status field: SENT, DELIVERED, or SEEN."
+          }
+        },
+        {
+          "name": "Send Message (Owner)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "token={{ownerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Yes, it is available. When would you like to visit?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/threads/{{threadId}}/messages",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat", "threads", "{{threadId}}", "messages"]
+            },
+            "description": "Owner replies in the same thread."
+          }
+        },
+        {
+          "name": "Mark Thread as Seen",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "token={{ownerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/threads/{{threadId}}/read",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat", "threads", "{{threadId}}", "read"]
+            },
+            "description": "Mark incoming messages as SEEN. Re-fetch messages to verify status changed."
           }
         }
       ]
