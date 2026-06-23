@@ -111,4 +111,18 @@ const getCurrentUser = async (req, res) => {
     return next(error);
   }
 };
-export { login, register, logout, getCurrentUser };
+const getSocketToken = async (req, res, next) => {
+  try {
+    const token = req.cookies?.token;
+
+    if (!token) {
+      return next(new Error("No token provided", { cause: 401 }));
+    }
+
+    return res.status(200).json({ token });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export { login, register, logout, getCurrentUser, getSocketToken };

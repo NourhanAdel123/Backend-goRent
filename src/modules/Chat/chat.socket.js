@@ -148,7 +148,7 @@ export const initChatSocket = (io) => {
 
   io.use((socket, next) => {
     try {
-      const token = socket.handshake.headers.token;
+      const token = parseTokenFromHandshake(socket.handshake);
 
       if (!token) {
         return next(new Error("Authentication required"));
