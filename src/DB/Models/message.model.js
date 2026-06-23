@@ -21,15 +21,27 @@ const messageSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-    isRead: {
-      type: Boolean,
-      default: false,
+    status: {
+      type: String,
+      enum: ["SENT", "DELIVERED", "SEEN"],
+      default: "SENT",
+    },
+    deliveredAt: {
+      type: Date,
+      default: null,
+    },
+    seenAt: {
+      type: Date,
+      default: null,
     },
   },
   {
     timestamps: true,
   },
 );
+
+messageSchema.index({ threadId: 1, createdAt: -1 });
+messageSchema.index({ threadId: 1, senderId: 1, status: 1 });
 
 const Message = mongoose.model("Message", messageSchema);
 
