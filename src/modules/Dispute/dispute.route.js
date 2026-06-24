@@ -12,3 +12,5 @@ router.patch("/:id/review", verifyRole(["admin"]), DC.markDisputeInReview);
 router.patch("/:id/resolve", verifyRole(["admin"]), DC.resolveDispute);
 router.patch("/:id/reject", verifyRole(["admin"]), DC.rejectDispute);
 router.delete("/:id", verifyAuth,verifyRole(["admin","superadmin"]), DC.deleteDispute);
+
+export default router;
