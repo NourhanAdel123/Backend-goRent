@@ -11,11 +11,13 @@ import {
   rejectProperty,
   getPropertbyOwnerId,
   getOwnerDashboard,
+    getAdminProperties
 } from "./property.controller.js";
 
 const router = express.Router();
 
 router.get("/", getProperties);
+router.get("/admin/properties", verifyRole(["admin","superadmin"]), getAdminProperties);
 router.get("/get/owner", verifyRole(["owner"]), getPropertbyOwnerId);
 router.get("/owner/dashboard", verifyRole(["owner"]), getOwnerDashboard);
 router.get("/:id", getPropertyById);
