@@ -657,3 +657,31 @@ export const getOwnerDashboard = async (req, res, next) => {
     return next(error);
   }
 };
+export const getAdminProperties = async (req, res) => {
+  try {
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const limit = Math.max(parseInt(req.query.limit) || 10, 1);
+
+    const query = Property.find({}).populate(
+        "ownerId",
+        "name email phone profileImage"
+    );
+    query.sort({ createdAt: -1 });
+    const [properties, totalItems] = await Promise.all([
+      query.skip((page - 1) * limit).limit(limit),
+      Property.countDocuments({}),
+    ]);
+
+    return res.status(200).json({
+      properties,
+      pagination: {
+        page,
+        limit,
+        totalItems,
+        totalPages: Math.ceil(totalItems / limit),
+      },
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
