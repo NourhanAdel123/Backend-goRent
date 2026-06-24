@@ -14,6 +14,7 @@ import reviewsRouter from "./src/modules/Reviews/reviews.route.js";
 import userRouter from "./src/modules/User/user.route.js";
 import viewingRouter from "./src/modules/Viewing/viewing.route.js";
 import reportRouter from "./src/modules/Report/report.route.js";
+import disputeRouter from "./src/modules/Dispute/dispute.route.js";
 
 const PORT = process.env.PORT || 5000;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:3000";
@@ -51,6 +52,7 @@ app.use("/api/bookings", bookingRouter);
 app.use("/api/viewing", viewingRouter);
 app.use("/api/reviews", reviewsRouter);
 app.use("/api/chat", chatRouter);
+app.use("/api/disputes",disputeRouter)
 
 app.use('/api/report',reportRouter)
 
