@@ -26,6 +26,11 @@ const propertySchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+    pricePerDay: {
+      type: Number,
+      default: null,
+      min: 0,
+    },
     squareFootage: {
       type: Number,
       required: true,
@@ -54,6 +59,10 @@ const propertySchema = new mongoose.Schema(
     isAvailable: {
       type: Boolean,
       default: true,
+    },
+    listingPaid: {
+      type: Boolean,
+      default: false,
     },
     status: {
       type: String,

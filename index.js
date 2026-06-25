@@ -9,6 +9,8 @@ import bookingRouter from "./src/modules/Booking/booking.route.js";
 import viewingRouter from "./src/modules/Viewing/viewing.route.js";
 import propertyRouter from "./src/modules/Property/property.route.js";
 import userRouter from "./src/modules/User/user.route.js";
+import paymentRoutes from "./src/modules/Payment/payment.route.js";
+
 
 const PORT = process.env.PORT || 5000;
 
@@ -30,6 +32,7 @@ app.use("/api/reviews", reviewsRouter);
 app.use("/api/bookings", bookingRouter);
 app.use("/api/viewing", viewingRouter);
 app.use("/api/properties", propertyRouter);
+app.use("/api/payment", paymentRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });

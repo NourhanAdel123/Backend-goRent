@@ -12,21 +12,25 @@ const bookingSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    stripePaymentIntentId: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
+    paymentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Payment",
+      default: null,
     },
-    amountPaid: {
-      type: Number,
-      required: true,
-      min: 0,
+    ownerAccepted: {
+      type: Boolean,
+      default: false,
     },
     status: {
       type: String,
-      enum: ["PENDING_PAYMENT", "RESERVED", "CANCELLED"],
-      default: "PENDING_PAYMENT",
+      enum: [
+        "PENDING_OWNER_APPROVAL",
+        "REJECTED",
+        "PENDING_PAYMENT",
+        "RESERVED",
+        "CANCELLED",
+      ],
+      default: "PENDING_OWNER_APPROVAL",
     },
     contractPdfUrl: {
       type: String,
