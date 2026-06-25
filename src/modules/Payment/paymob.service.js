@@ -1,7 +1,4 @@
-const PAYMOB_API_KEY = process.env.PAYMOB_API_KEY;
-const PAYMOB_INTEGRATION_ID = process.env.PAYMOB_INTEGRATION_ID;
-const PAYMOB_IFRAME_ID = process.env.PAYMOB_IFRAME_ID;
-const PAYMOB_BASE_URL =process.env.PAYMOB_BASE_URL || "https://accept.paymob.com/api";
+const PAYMOB_BASE_URL = process.env.PAYMOB_BASE_URL || "https://accept.paymob.com/api";
 
 const postPaymob = async (path, body) => {
     const response = await fetch(`${PAYMOB_BASE_URL}${path}`, {
@@ -23,6 +20,8 @@ const postPaymob = async (path, body) => {
 };
 
 export const getAuthToken = async () => {
+    const PAYMOB_API_KEY = process.env.PAYMOB_API_KEY;
+
     if (!PAYMOB_API_KEY) {
         throw new Error("PAYMOB_API_KEY is not configured");
     }
@@ -58,6 +57,8 @@ export const getPaymentKey = async (
     amountCents,
     billingData,
 ) => {
+    const PAYMOB_INTEGRATION_ID = process.env.PAYMOB_INTEGRATION_ID;
+
     if (!PAYMOB_INTEGRATION_ID) {
         throw new Error("PAYMOB_INTEGRATION_ID is not configured");
     }
@@ -101,6 +102,8 @@ export const initiatePayment = async ({
     billingData,
     items = [],
 }) => {
+    const PAYMOB_IFRAME_ID = process.env.PAYMOB_IFRAME_ID;
+
     if (!PAYMOB_IFRAME_ID) {
         throw new Error("PAYMOB_IFRAME_ID is not configured");
     }

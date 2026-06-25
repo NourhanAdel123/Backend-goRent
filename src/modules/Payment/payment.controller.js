@@ -6,11 +6,7 @@ import User from "../../DB/Models/user.model.js";
 import { initiatePayment } from "./paymob.service.js";
 import { calculateBookingFeeEGP, LISTING_FEE_EGP } from "../../utils/calculateBookingFee.js";
 
-// Builds the full billing_data object Paymob requires. Our User model only
-// stores a single `name` field, so we split it into first/last here, at
-// the boundary where we talk to Paymob — not inside the User schema.
-// Fields like city/state/street/etc. are irrelevant for our service (no
-// shipping involved), so they get safe placeholder values.
+
 const buildBillingData = (user) => {
     const nameParts = (user?.name || "").trim().split(/\s+/);
     const firstName = nameParts[0] || "N/A";
@@ -31,12 +27,11 @@ const buildBillingData = (user) => {
     };
 };
 
-/**
- * Owner pays the fixed 100 EGP listing fee to publish a property.
- * Property stays `status: "pending"` (invisible to tenants) until the
- * webhook confirms this payment succeeded.
- */
+
 export const initiateListingFeePayment = async (req, res, next) => {
+    console.log("inside initiateBookingFeePayment");
+
+
     try {
         const { propertyId } = req.params;
         const ownerId = req.user.id;
@@ -104,10 +99,7 @@ export const initiateListingFeePayment = async (req, res, next) => {
     }
 };
 
-/**
- * Tenant pays the 10% booking fee once the owner has accepted the booking
- * (status must be PENDING_PAYMENT).
- */
+
 export const initiateBookingFeePayment = async (req, res, next) => {
     try {
         const { bookingId } = req.params;

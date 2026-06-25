@@ -91,14 +91,13 @@ const paymentSchema = new mongoose.Schema(
 
 // Enforce that the right parent reference is present for each payment type
 // — a BOOKING_FEE payment with no bookingId (or vice versa) is invalid data.
-paymentSchema.pre("validate", function (next) {
+paymentSchema.pre("save", function () {
     if (this.type === "LISTING_FEE" && !this.propertyId) {
-        return next(new Error("propertyId is required for LISTING_FEE payments"));
+        throw new Error("propertyId is required for LISTING_FEE payments");
     }
     if (this.type === "BOOKING_FEE" && !this.bookingId) {
-        return next(new Error("bookingId is required for BOOKING_FEE payments"));
+        throw new Error("bookingId is required for BOOKING_FEE payments");
     }
-    next();
 });
 
 paymentSchema.index({ bookingId: 1 });
