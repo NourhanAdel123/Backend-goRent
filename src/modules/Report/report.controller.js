@@ -2,7 +2,7 @@ import User from "../../DB/Models/user.model.js";
 import Property from "../../DB/Models/property.model.js";
 import Booking from "../../DB/Models/booking.model.js";
 import Dispute from "../../DB/Models/dispute.model.js";
-
+import Review from "../../DB/Models/review.model.js";
 
 export const getPlatformReport = async (req,res,next) =>{
     try {
