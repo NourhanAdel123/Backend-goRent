@@ -24,7 +24,7 @@ export const createDispute = async (req, res , next) => {
         const dispute = await Dispute.create({
             propertyId,
             tenantId,
-            ownerId:Property.ownerId,
+            ownerId:property.ownerId,
             subject,
             description,
         })
