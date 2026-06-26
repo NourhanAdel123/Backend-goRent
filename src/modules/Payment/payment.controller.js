@@ -29,9 +29,6 @@ const buildBillingData = (user) => {
 
 
 export const initiateListingFeePayment = async (req, res, next) => {
-    console.log("inside initiateBookingFeePayment");
-
-
     try {
         const { propertyId } = req.params;
         const ownerId = req.user.id;
