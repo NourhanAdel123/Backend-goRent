@@ -1,5 +1,5 @@
 import express from "express"
-import { verifyRole } from "../../Middleware/Auth.Middleware.js"
+import { verifyRole, verifyAuth } from "../../Middleware/Auth.Middleware.js"
 import { validateCreateViewing } from "./viewing.validation.js"
 import {
     createViewing,
@@ -13,7 +13,7 @@ import {
 const router = express.Router()
 
 
-router.post("/", verifyRole(["tenant"]), validateCreateViewing, createViewing)
+router.post("/", verifyAuth, verifyRole(["tenant"]), validateCreateViewing, createViewing)
 
 
 router.patch("/:id/accept", verifyRole(["owner"]), acceptViewing)
