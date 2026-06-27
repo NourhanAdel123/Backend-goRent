@@ -14,6 +14,7 @@ import reviewsRouter from "./src/modules/Reviews/reviews.route.js";
 import userRouter from "./src/modules/User/user.route.js";
 import viewingRouter from "./src/modules/Viewing/viewing.route.js";
 import notificationRouter from "./src/modules/Notification/notification.route.js";
+import contactRouter from "./src/modules/Contact/contact.route.js";
 
 const PORT = process.env.PORT || 5000;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:3000";
@@ -52,6 +53,7 @@ app.use("/api/viewing", viewingRouter);
 app.use("/api/reviews", reviewsRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/notifications", notificationRouter);
+app.use("/api/contact", contactRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });

@@ -1,0 +1,26 @@
+import express from "express";
+import { verifyAuth, verifyRole } from "../../Middleware/Auth.Middleware.js";
+import {
+  submitContact,
+  getAllContacts,
+  updateContactStatus,
+  deleteContact,
+} from "./contact.controller.js";
+
+const router = express.Router();
+
+router.post(
+  "/",
+  (req, res, next) => {
+    verifyAuth(req, res, () => next());
+  },
+  submitContact,
+);
+
+router.use(verifyRole(["admin", "superadmin"]));
+
+router.get("/", getAllContacts);
+router.patch("/:id/status", updateContactStatus);
+router.delete("/:id", deleteContact);
+
+export default router;
