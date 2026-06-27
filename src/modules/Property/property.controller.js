@@ -196,7 +196,9 @@ export const createProperty = async (req, res, next) => {
       status: "PENDING",
     });
 
-    const admins = await User.find({ role: { $in: ["admin", "superadmin"] } }).select("_id");
+    const admins = await User.find({
+      role: { $in: ["admin", "superadmin"] },
+    }).select("_id");
     for (const admin of admins) {
       const notification = await Notification.create({
         userId: admin._id,
@@ -210,7 +212,7 @@ export const createProperty = async (req, res, next) => {
         message: `A new property "${property.title}" is pending approval.`,
         type: "NEW_LISTING_PENDING",
         date: notification.createdAt,
-        isRead: false
+        isRead: false,
       });
     }
 
@@ -476,7 +478,7 @@ export const approveProperty = async (req, res, next) => {
       message: `Your property listing "${property.title}" has been approved.`,
       type: "LISTING_APPROVED",
       date: notification.createdAt,
-      isRead: false
+      isRead: false,
     });
 
     await logAdminAction({
@@ -533,7 +535,7 @@ export const rejectProperty = async (req, res, next) => {
       message: `Your property listing "${property.title}" has been rejected.`,
       type: "LISTING_REJECTED",
       date: notification.createdAt,
-      isRead: false
+      isRead: false,
     });
 
     await logAdminAction({
@@ -557,7 +559,12 @@ export const rejectProperty = async (req, res, next) => {
 };
 export const getPropertbyOwnerId = async (req, res, next) => {
   try {
+    console.log("here");
+
     const ownerId = req.user.id;
+    console.log(ownerId);
+    console.log("here");
+
     if (!mongoose.Types.ObjectId.isValid(ownerId)) {
       return next(new Error("Invalid owner id", { cause: 400 }));
     }
@@ -703,6 +710,34 @@ export const getOwnerDashboard = async (req, res, next) => {
         },
       },
       properties: enrichedProperties,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+export const getAdminProperties = async (req, res) => {
+  try {
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const limit = Math.max(parseInt(req.query.limit) || 10, 1);
+
+    const query = Property.find({}).populate(
+      "ownerId",
+      "name email phone profileImage",
+    );
+    query.sort({ createdAt: -1 });
+    const [properties, totalItems] = await Promise.all([
+      query.skip((page - 1) * limit).limit(limit),
+      Property.countDocuments({}),
+    ]);
+
+    return res.status(200).json({
+      properties,
+      pagination: {
+        page,
+        limit,
+        totalItems,
+        totalPages: Math.ceil(totalItems / limit),
+      },
     });
   } catch (error) {
     return next(error);

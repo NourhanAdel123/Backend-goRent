@@ -79,6 +79,7 @@ export const createOrGetThread = async (req, res, next) => {
 export const getMyThreads = async (req, res, next) => {
   try {
     const userId = req.user.id;
+    // console.log(userId);
 
     const threads = await ChatThread.find({
       $or: [{ tenantId: userId }, { ownerId: userId }],

@@ -2,32 +2,27 @@ import jwt from "jsonwebtoken";
 
 export const verifyRole = (requiredRole) => {
   return (req, res, next) => {
-    const token = req.cookies?.token;
-    if (!token) {
+    if (!req.user) {
+      console.log("error from middleware");
+
       return res
         .status(401)
         .json({ message: "Access Denied: No token provided" });
     }
 
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = decoded;
-      console.log(req.user);
-      if (
-        requiredRole.includes(decoded.role) ||
-        decoded.role === "superadmin"
-      ) {
-        return next();
-      } else {
-        return res
-          .status(403)
-          .json({ message: `user role ${decoded.role} is not authorized` });
-      }
-    } catch (error) {
-      return res.status(401).json({ message: "Invalid or expired token" });
+    if (
+      requiredRole.includes(req.user.role) ||
+      req.user.role === "superadmin"
+    ) {
+      return next();
+    } else {
+      return res
+        .status(403)
+        .json({ message: `user role ${req.user.role} is not authorized` });
     }
   };
 };
+
 export const verifyAuth = (req, res, next) => {
   const token = req.cookies?.token || req.headers?.authorization?.split(" ")[1];
 

@@ -1,5 +1,5 @@
 import express from "express";
-import { verifyRole } from "../../Middleware/Auth.Middleware.js";
+import { verifyAuth, verifyRole } from "../../Middleware/Auth.Middleware.js";
 import { upload } from "../../utils/cloudinary.js";
 import {
   createOrGetThread,
@@ -8,11 +8,14 @@ import {
   sendMessage,
   markThreadAsRead,
 } from "./chat.controller.js";
-import { validateCreateThread, validateSendMessage } from "./chat.validation.js";
+import {
+  validateCreateThread,
+  validateSendMessage,
+} from "./chat.validation.js";
 
 const router = express.Router();
 
-router.use(verifyRole(["tenant", "owner"]));
+router.use(verifyAuth, verifyRole(["tenant", "owner"]));
 
 router.post("/threads", validateCreateThread, createOrGetThread);
 router.get("/threads", getMyThreads);

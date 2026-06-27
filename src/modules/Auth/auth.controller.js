@@ -100,9 +100,7 @@ const getCurrentUser = async (req, res) => {
       return next(new Error("User not found", { cause: 404 }));
     }
 
-    return res.status(200).json({
-      user,
-    });
+return res.status(200).json({ message: "Login successful", user });
   } catch (error) {
     // return res.status(500).json({
     //   message: "Server error",
