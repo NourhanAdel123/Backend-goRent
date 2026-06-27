@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 export const verifyRole = (requiredRole) => {
   return (req, res, next) => {
     if (!req.user) {
+      console.log("error from middleware");
+
       return res
         .status(401)
         .json({ message: "Access Denied: No token provided" });
