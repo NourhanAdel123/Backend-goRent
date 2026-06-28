@@ -1,5 +1,5 @@
 import express from "express";
-import { verifyAuth, verifyRole } from "../../Middleware/Auth.Middleware.js";
+import { optionalAuth, verifyRole } from "../../Middleware/Auth.Middleware.js";
 import {
   submitContact,
   getAllContacts,
@@ -9,13 +9,7 @@ import {
 
 const router = express.Router();
 
-router.post(
-  "/",
-  (req, res, next) => {
-    verifyAuth(req, res, () => next());
-  },
-  submitContact,
-);
+router.post("/", optionalAuth, submitContact);
 
 router.use(verifyRole(["admin", "superadmin"]));
 
