@@ -286,3 +286,100 @@ export const getPropertyBookings = async (req, res, next) => {
     return next(error);
   }
 };
+
+export const getOwnerAnalytics = async (req, res, next) => {
+  try {
+    const ownerId = req.user.id;
+
+    const properties = await Property.find({ ownerId }).select("_id title");
+    const propertyIds = properties.map((p) => p._id);
+
+    if (!propertyIds.length) {
+      return res.status(200).json({
+        statusBreakdown: { PENDING_OWNER_APPROVAL: 0, PENDING_PAYMENT: 0, RESERVED: 0, REJECTED: 0, CANCELLED: 0 },
+        monthlyTrend: [],
+        perProperty: [],
+        totals: { total: 0, reserved: 0, acceptanceRate: 0, cancellationRate: 0 },
+      });
+    }
+
+    const allBookings = await Booking.find({ propertyId: { $in: propertyIds } })
+      .populate("propertyId", "title")
+      .lean();
+
+    // Status breakdown
+    const statusBreakdown = {
+      PENDING_OWNER_APPROVAL: 0,
+      PENDING_PAYMENT: 0,
+      RESERVED: 0,
+      REJECTED: 0,
+      CANCELLED: 0,
+    };
+    for (const b of allBookings) {
+      if (statusBreakdown[b.status] !== undefined) statusBreakdown[b.status]++;
+    }
+
+    // Monthly trend — last 6 months
+    const now = new Date();
+    const monthlyTrend = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const start = new Date(d.getFullYear(), d.getMonth(), 1);
+      const end = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999);
+      const label = d.toLocaleDateString("ar-EG", { month: "short", year: "2-digit" });
+
+      const monthBookings = allBookings.filter((b) => {
+        const c = new Date(b.createdAt);
+        return c >= start && c <= end;
+      });
+
+      monthlyTrend.push({
+        label,
+        total: monthBookings.length,
+        reserved: monthBookings.filter((b) => b.status === "RESERVED").length,
+        cancelled: monthBookings.filter((b) => b.status === "CANCELLED").length,
+      });
+    }
+
+    // Per-property breakdown
+    const propertyMap = {};
+    for (const p of properties) {
+      propertyMap[p._id.toString()] = {
+        title: p.title,
+        total: 0,
+        reserved: 0,
+        rejected: 0,
+        cancelled: 0,
+        pending: 0,
+      };
+    }
+    for (const b of allBookings) {
+      const pid = b.propertyId?._id?.toString() || b.propertyId?.toString();
+      if (!pid || !propertyMap[pid]) continue;
+      propertyMap[pid].total++;
+      if (b.status === "RESERVED") propertyMap[pid].reserved++;
+      else if (b.status === "REJECTED") propertyMap[pid].rejected++;
+      else if (b.status === "CANCELLED") propertyMap[pid].cancelled++;
+      else if (b.status === "PENDING_OWNER_APPROVAL" || b.status === "PENDING_PAYMENT") propertyMap[pid].pending++;
+    }
+    const perProperty = Object.values(propertyMap).sort((a, b) => b.total - a.total);
+
+    // Summary totals
+    const total = allBookings.length;
+    const reserved = statusBreakdown.RESERVED;
+    const rejected = statusBreakdown.REJECTED;
+    const cancelled = statusBreakdown.CANCELLED;
+    const decidedCount = reserved + rejected;
+    const acceptanceRate = decidedCount > 0 ? Math.round((reserved / decidedCount) * 100) : 0;
+    const cancellationRate = total > 0 ? Math.round((cancelled / total) * 100) : 0;
+
+    return res.status(200).json({
+      statusBreakdown,
+      monthlyTrend,
+      perProperty,
+      totals: { total, reserved, acceptanceRate, cancellationRate },
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
