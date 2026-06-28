@@ -315,10 +315,57 @@ export const unbanUser = async (req, res, next) => {
       user,
     });
   } catch (error) {
-    // return res.status(500).json({
-    //   message: "Server error",
-    //   error: error.message,
-    // });
+    return next(error);
+  }
+};
+
+export const getAdmins = async (req, res, next) => {
+  try {
+    const admins = await User.find({ role: "admin" }).select("-password").sort({ createdAt: -1 });
+    return res.status(200).json({ admins });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const promoteToAdmin = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return next(new Error("Email is required", { cause: 400 }));
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return next(new Error("User not found", { cause: 404 }));
+    }
+    if (user.role === "admin" || user.role === "superadmin") {
+      return next(new Error("User is already an admin or superadmin", { cause: 400 }));
+    }
+    user.role = "admin";
+    await user.save();
+    return res.status(200).json({ message: "User promoted to admin successfully", user });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const demoteToTenant = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return next(new Error("Invalid user id", { cause: 400 }));
+    }
+    const user = await User.findById(id);
+    if (!user) {
+      return next(new Error("User not found", { cause: 404 }));
+    }
+    if (user.role !== "admin") {
+      return next(new Error("User is not an admin", { cause: 400 }));
+    }
+    user.role = "tenant";
+    await user.save();
+    return res.status(200).json({ message: "Admin demoted to tenant successfully", user });
+  } catch (error) {
     return next(error);
   }
 };
