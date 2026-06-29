@@ -230,7 +230,7 @@ const deleteReview = async (req, res, next) => {
       return next(new Error("Review not found", { cause: 404 }));
     }
 
-    if (review.authorId.toString() !== req.user.id) {
+    if (review.authorId.toString() !== req.user.id && req.user.role !== "superadmin") {
       return next(
         new Error("You are not authorized to delete this review", {
           cause: 403,
