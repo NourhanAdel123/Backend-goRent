@@ -19,6 +19,7 @@ import notificationRouter from "./src/modules/Notification/notification.route.js
 import contactRouter from "./src/modules/Contact/contact.route.js";
 import reportRouter from "./src/modules/Report/report.route.js";
 import disputeRouter from "./src/modules/Dispute/dispute.route.js";
+import adminLogRouter from "./src/modules/Admin/adminLog.route.js";
 
 const PORT = process.env.PORT || 5000;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:3000";
@@ -63,6 +64,7 @@ app.use("/api/contact", contactRouter);
 app.use("/api/disputes",disputeRouter)
 
 app.use('/api/report',reportRouter)
+app.use('/api/logs', adminLogRouter)
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
